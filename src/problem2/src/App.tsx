@@ -23,15 +23,14 @@ function App() {
         });
     };
 
-    console.log(selectedCurrency);
-
     const handleSelectCurrency = (cur: CurrencyInfo, name: 'send' | 'receive') => {
         setSelectedCurrency((prev) => {
             if (exchangeInfo.send !== '') {
                 if (name === 'send') {
                     calculateResult(cur, selectedCurrency.receive);
+                } else {
+                    calculateResult(selectedCurrency.send, cur);
                 }
-                calculateResult(selectedCurrency.send, cur);
             }
             return { ...prev, [name]: cur };
         });
@@ -94,11 +93,15 @@ function App() {
                     <p className="text-center text-lg font-medium">Amount to send</p>
 
                     <div>
-                        <label className="sr-only">Amount to send</label>
+                        <label htmlFor="send" className="sr-only">
+                            Amount to send
+                        </label>
 
                         <div className="relative">
                             {!amountSendValid && <p className="text-sm italic text-red-500">This field is required!</p>}
                             <input
+                                data-testid="send"
+                                id="send"
                                 autoFocus={true}
                                 type="number"
                                 name="send"
@@ -142,7 +145,7 @@ function App() {
                         <div className="relative">
                             <input
                                 type="text"
-                                name="send"
+                                name="receive"
                                 className="w-full rounded-lg border border-gray-200 p-4 pe-12 text-sm shadow-sm"
                                 placeholder="Amount to receive"
                                 value={exchangeInfo.receive}
@@ -162,12 +165,7 @@ function App() {
 
                     <button
                         type="submit"
-                        className={clsx(
-                            'block w-full rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white',
-                            {
-                                'bg-indigo-400': loading,
-                            },
-                        )}
+                        className="block w-full rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white disabled:bg-indigo-400"
                         disabled={loading}
                     >
                         <div className="flex justify-center">
