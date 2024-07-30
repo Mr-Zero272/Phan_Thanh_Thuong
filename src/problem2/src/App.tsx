@@ -14,9 +14,10 @@ function App() {
     const [exchangeInfo, setExchangeInfo] = useState<ExChangeInfo>({ send: '', receive: '' });
     const [loading, setLoading] = useState<boolean>(false);
     const [amountSendValid, setAmountSendValid] = useState<boolean>(true);
+
     const handleInputAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setExchangeInfo((prev) => {
-            if (e.target.name === 'send' || e.target.name === 'receive') {
+            if (Object.keys(exchangeInfo).includes(e.target.name)) {
                 return { ...prev, [e.target.name]: e.target.value };
             }
             return prev;
@@ -59,13 +60,20 @@ function App() {
         calculateResult(selectedCurrency.send, selectedCurrency.receive);
     };
 
-    const calculateResult = (sendInfo: CurrencyInfo, receiveInfo: CurrencyInfo): void => {
+    const calculateResult = (sendInfo: CurrencyInfo | null, receiveInfo: CurrencyInfo | null): void => {
         let result: number = 0;
+
+        if (sendInfo === null || receiveInfo === null) {
+            result = 0;
+            return;
+        }
+
         if (sendInfo.currency === receiveInfo.currency) {
             result = +exchangeInfo.send;
         } else {
             result = (+exchangeInfo.send * sendInfo.price) / receiveInfo.price;
         }
+
         setLoading(true);
         setTimeout(() => {
             setExchangeInfo((prev) => ({
